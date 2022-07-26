@@ -1,0 +1,112 @@
+##
+## Copyright (C) 2021 Stealth Software Technologies, Inc.
+##
+## Permission is hereby granted, free of charge, to any person
+## obtaining a copy of this software and associated documentation
+## files (the "Software"), to deal in the Software without
+## restriction, including without limitation the rights to use,
+## copy, modify, merge, publish, distribute, sublicense, and/or
+## sell copies of the Software, and to permit persons to whom the
+## Software is furnished to do so, subject to the following
+## conditions:
+##
+## The above copyright notice and this permission notice shall be
+## included in all copies or substantial portions of the Software.
+##
+## THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+## EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+## OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+## NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+## HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+## WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+## FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+## OTHER DEALINGS IN THE SOFTWARE.
+##
+
+## begin_variables
+
+lib_libbmc_la_SOURCES =
+lib_libbmc_la_SOURCES += src/base/Crypto/Encryption/aes_utils.cpp
+lib_libbmc_la_SOURCES += src/base/Crypto/Encryption/aes_utils.h
+lib_libbmc_la_SOURCES += src/base/Crypto/Encryption/linux_encryption_utils.cpp
+lib_libbmc_la_SOURCES += src/base/Crypto/Encryption/paillier.cpp
+lib_libbmc_la_SOURCES += src/base/Crypto/Encryption/paillier.h
+lib_libbmc_la_SOURCES += src/base/Crypto/MultiPartyComputation/Circuits/circuit_builder_utils.cpp
+lib_libbmc_la_SOURCES += src/base/Crypto/MultiPartyComputation/Circuits/circuit_builder_utils.h
+lib_libbmc_la_SOURCES += src/base/Crypto/MultiPartyComputation/Circuits/circuit_converter_utils.cpp
+lib_libbmc_la_SOURCES += src/base/Crypto/MultiPartyComputation/Circuits/circuit_converter_utils.h
+lib_libbmc_la_SOURCES += src/base/Crypto/MultiPartyComputation/Circuits/circuit_utils.cpp
+lib_libbmc_la_SOURCES += src/base/Crypto/MultiPartyComputation/Circuits/circuit_utils.h
+lib_libbmc_la_SOURCES += src/base/Crypto/MultiPartyComputation/Circuits/gmw_circuit.cpp
+lib_libbmc_la_SOURCES += src/base/Crypto/MultiPartyComputation/Circuits/gmw_circuit.h
+lib_libbmc_la_SOURCES += src/base/Crypto/MultiPartyComputation/Circuits/gmw_circuit_by_gate.cpp
+lib_libbmc_la_SOURCES += src/base/Crypto/MultiPartyComputation/Circuits/gmw_circuit_by_gate.h
+lib_libbmc_la_SOURCES += src/base/Crypto/MultiPartyComputation/Circuits/standard_circuit.cpp
+lib_libbmc_la_SOURCES += src/base/Crypto/MultiPartyComputation/Circuits/standard_circuit.h
+lib_libbmc_la_SOURCES += src/base/Crypto/MultiPartyComputation/Circuits/standard_circuit_by_gate.cpp
+lib_libbmc_la_SOURCES += src/base/Crypto/MultiPartyComputation/Circuits/standard_circuit_by_gate.h
+lib_libbmc_la_SOURCES += src/base/Crypto/MultiPartyComputation/Demos/n_party_mpc_by_gate_cookie_socket.cpp
+lib_libbmc_la_SOURCES += src/base/Crypto/MultiPartyComputation/Demos/n_party_mpc_by_gate_cookie_socket.h
+lib_libbmc_la_SOURCES += src/base/Crypto/MultiPartyComputation/Demos/two_party_mpc_cookie_socket.cpp
+lib_libbmc_la_SOURCES += src/base/Crypto/MultiPartyComputation/Demos/two_party_mpc_cookie_socket.h
+lib_libbmc_la_SOURCES += src/base/Crypto/ObliviousTransfer/oblivious_transfer_utils.cpp
+lib_libbmc_la_SOURCES += src/base/Crypto/ObliviousTransfer/oblivious_transfer_utils.h
+lib_libbmc_la_SOURCES += src/base/Crypto/RandomNumberGeneration/deterministic_random_utils.cpp
+lib_libbmc_la_SOURCES += src/base/Crypto/RandomNumberGeneration/deterministic_random_utils.h
+lib_libbmc_la_SOURCES += src/base/Crypto/RandomNumberGeneration/linux_random_utils.cpp
+lib_libbmc_la_SOURCES += src/base/Crypto/RandomNumberGeneration/prg_utils.cpp
+lib_libbmc_la_SOURCES += src/base/Crypto/RandomNumberGeneration/prg_utils.h
+lib_libbmc_la_SOURCES += src/base/Crypto/RandomNumberGeneration/random_oracle_utils.cpp
+lib_libbmc_la_SOURCES += src/base/Crypto/RandomNumberGeneration/random_oracle_utils.h
+lib_libbmc_la_SOURCES += src/base/Crypto/RandomNumberGeneration/random_utils.cpp
+lib_libbmc_la_SOURCES += src/base/Crypto/RandomNumberGeneration/random_utils.h
+lib_libbmc_la_SOURCES += src/base/FileReaderUtils/read_file_utils.cpp
+lib_libbmc_la_SOURCES += src/base/FileReaderUtils/read_file_utils.h
+lib_libbmc_la_SOURCES += src/base/GenericUtils/char_casting_utils.cpp
+lib_libbmc_la_SOURCES += src/base/GenericUtils/char_casting_utils.h
+lib_libbmc_la_SOURCES += src/base/GenericUtils/init_utils.cpp
+lib_libbmc_la_SOURCES += src/base/GenericUtils/init_utils.h
+lib_libbmc_la_SOURCES += src/base/GenericUtils/linux_mutex.cpp
+lib_libbmc_la_SOURCES += src/base/GenericUtils/linux_mutex.h
+lib_libbmc_la_SOURCES += src/base/GenericUtils/linux_thread.cpp
+lib_libbmc_la_SOURCES += src/base/GenericUtils/linux_thread.h
+lib_libbmc_la_SOURCES += src/base/GenericUtils/mutex.cpp
+lib_libbmc_la_SOURCES += src/base/GenericUtils/mutex.h
+lib_libbmc_la_SOURCES += src/base/GenericUtils/thread.cpp
+lib_libbmc_la_SOURCES += src/base/GenericUtils/thread.h
+lib_libbmc_la_SOURCES += src/base/GenericUtils/thread_utils.cpp
+lib_libbmc_la_SOURCES += src/base/GenericUtils/thread_utils.h
+lib_libbmc_la_SOURCES += src/base/LoggingUtils/logging_utils.cpp
+lib_libbmc_la_SOURCES += src/base/LoggingUtils/logging_utils.h
+lib_libbmc_la_SOURCES += src/base/MapUtils/map_utils.cpp
+lib_libbmc_la_SOURCES += src/base/MapUtils/map_utils.h
+lib_libbmc_la_SOURCES += src/base/MathUtils/AbstractAlgebra/group.cpp
+lib_libbmc_la_SOURCES += src/base/MathUtils/AbstractAlgebra/group.h
+lib_libbmc_la_SOURCES += src/base/MathUtils/constants.cpp
+lib_libbmc_la_SOURCES += src/base/MathUtils/constants.h
+lib_libbmc_la_SOURCES += src/base/MathUtils/data_structures.cpp
+lib_libbmc_la_SOURCES += src/base/MathUtils/data_structures.h
+lib_libbmc_la_SOURCES += src/base/MathUtils/formula_utils.cpp
+lib_libbmc_la_SOURCES += src/base/MathUtils/formula_utils.h
+lib_libbmc_la_SOURCES += src/base/MathUtils/large_int.cpp
+lib_libbmc_la_SOURCES += src/base/MathUtils/large_int.h
+lib_libbmc_la_SOURCES += src/base/MathUtils/number_conversion_utils.cpp
+lib_libbmc_la_SOURCES += src/base/MathUtils/number_conversion_utils.h
+lib_libbmc_la_SOURCES += src/base/Networking/cookie_socket.cpp
+lib_libbmc_la_SOURCES += src/base/Networking/cookie_socket.h
+lib_libbmc_la_SOURCES += src/base/Networking/linux_socket.cpp
+lib_libbmc_la_SOURCES += src/base/Networking/linux_socket.h
+lib_libbmc_la_SOURCES += src/base/Networking/socket.cpp
+lib_libbmc_la_SOURCES += src/base/Networking/socket.h
+lib_libbmc_la_SOURCES += src/base/Networking/socket_utils.cpp
+lib_libbmc_la_SOURCES += src/base/Networking/socket_utils.h
+lib_libbmc_la_SOURCES += src/base/StringUtils/string_utils.cpp
+lib_libbmc_la_SOURCES += src/base/StringUtils/string_utils.h
+lib_libbmc_la_SOURCES += src/base/TestUtils/test_utils.cpp
+lib_libbmc_la_SOURCES += src/base/TestUtils/test_utils.h
+lib_libbmc_la_SOURCES += src/base/TestUtils/timer_utils.cpp
+lib_libbmc_la_SOURCES += src/base/TestUtils/timer_utils.h
+lib_libbmc_la_SOURCES += src/base/global_utils.h
+lib_libbmc_la_SOURCES += src/com/stealthsoftwareinc/bmc/MpcTask.jniCall.cpp
+
+## end_variables

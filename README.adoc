@@ -1,0 +1,316 @@
+//
+// Copyright (C) 2021 Stealth Software Technologies, Inc.
+//
+// Permission is hereby granted, free of charge, to any person
+// obtaining a copy of this software and associated documentation
+// files (the "Software"), to deal in the Software without
+// restriction, including without limitation the rights to use,
+// copy, modify, merge, publish, distribute, sublicense, and/or
+// sell copies of the Software, and to permit persons to whom the
+// Software is furnished to do so, subject to the following
+// conditions:
+//
+// The above copyright notice and this permission notice shall be
+// included in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+// OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+// NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+// WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+// FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+// OTHER DEALINGS IN THE SOFTWARE.
+//
+
+= PULSAR-MPC
+
+:subs_source: attributes,specialchars,quotes,macros
+
+:AssetManager_open: link:https://developer.android.com/reference/android/content/res/AssetManager#open(java.lang.String)[AssetManager.open]
+:Callable: link:https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/Callable.html[Callable]
+:Context_getAssets: link:https://developer.android.com/reference/android/content/Context#getAssets()[Context.getAssets]
+:Context_getFilesDir: link:https://developer.android.com/reference/android/content/Context#getFilesDir()[Context.getFilesDir]
+:InputStream: link:https://docs.oracle.com/javase/8/docs/api/java/io/InputStream.html[InputStream]
+:MpcTask: link:src/com/stealthsoftwareinc/bmc/MpcTask.java[MpcTask]
+:MpcTaskTest: link:src/com/stealthsoftwareinc/bmc/MpcTaskTest.java[MpcTaskTest]
+:String: link:https://docs.oracle.com/javase/8/docs/api/java/lang/String.html[String]
+:System_load: link:https://docs.oracle.com/javase/8/docs/api/java/lang/System.html#load-java.lang.String-[System.load]
+:System_loadLibrary: link:https://docs.oracle.com/javase/8/docs/api/java/lang/System.html#loadLibrary-java.lang.String-[System.loadLibrary]
+:getApplicationInfo: link:https://developer.android.com/reference/android/content/pm/PackageManager#getApplicationInfo(java.lang.String,%20int)[getApplicationInfo]
+:nativeLibraryDir: link:https://developer.android.com/reference/android/content/pm/ApplicationInfo#nativeLibraryDir[nativeLibraryDir]
+
+PULSAR-MPC is a special-purpose library for secure multiparty
+computation (MPC) that was written by
+link:https://www.stealthsoftwareinc.com/[Stealth Software Technologies, Inc.]
+as part of the DARPA Brandeis project.
+The library was primarily intended to be used as part of the CoffeeBreak
+Android application.
+For additional inquiry in the use and deployment of our software, please
+reach out to us at mailto:contact@stealthsoftwareinc.com[].
+
+Essentially, CoffeeBreak is an application that securely computes the
+centroid of a set of private locations to find a single meeting place,
+such as a coffee shop.
+We model this computation as a circuit, which is securely evaluated by
+our core MPC engine.
+Each party's private location is hidden.
+
+== Precompiled Android library
+
+A precompiled Android library, `pulsar-mpc-<version>.aar`, is provided
+on the
+link:https://github.com/stealthsoftwareinc/pulsar-mpc/releases[Releases]
+page.
+The library includes the following:
+
+* {empty}
+A set of `coffeeshop_*.cbg` circuits.
+
+* {empty}
+The `{MpcTask}` class.
+
+* {empty}
+The `bmc` native library and all of its prerequisite native libraries,
+compiled for AArch64 and x86_64.
+
+== Building for Android
+
+For reference, a set of precompiled Android files,
+`pulsar-mpc-<version>-android.tar.xz`, is provided on the
+link:https://github.com/stealthsoftwareinc/pulsar-mpc/releases[Releases]
+page.
+The archive includes the same content as the precompiled Android
+library.
+
+You can also build the Android native libraries yourself as follows
+(this requires that you have `docker` installed):
+
+[source,subs="{subs_source}"]
+----
+./configure
+
+make parcels/pulsar-mpc-VERSION-aarch64-linux-android-api27.tar.xz
+
+make parcels/pulsar-mpc-VERSION-x86_64-linux-android-api27.tar.xz
+----
+
+== Building for Linux
+
+This section walks through building and installing PULSAR-MPC on an
+Ubuntu machine.
+
+Run the following commands to build and install the `bmc` native library
+and the `circuit_builder_main` utility:
+
+[source,subs="{subs_source}"]
+----
+sudo apt-get install g++ make openjdk-11-jdk libgmp-dev nettle-dev
+
+./configure \
+  --disable-static \
+  CPPFLAGS="-I/usr/lib/jvm/java-11-openjdk-amd64/include \
+            -I/usr/lib/jvm/java-11-openjdk-amd64/include/linux" \
+  CFLAGS="-O2 -march=native" \
+  CXXFLAGS="-O2 -march=native" \
+;
+
+make
+
+sudo make install
+----
+
+After installing, you can test the `{MpcTask}` class using the
+`{MpcTaskTest}` program by following the comments inside the
+`{MpcTaskTest}` source code.
+The `{MpcTaskTest}` program includes an implementation of the
+`{MpcTask}.Channel` interface for
+link:https://www.rabbitmq.com/[RabbitMQ].
+As this is a push channel implementation, note how the `basicConsume()`
+handlers call the `{MpcTask}.recv()` method from elsewhere to feed it
+bytes.
+Also note how this code calls the `{System_loadLibrary}()` method
+similarly to as described previously.
+
+== Compiling circuits
+
+After building and installing PULSAR-MPC on a Linux machine, the
+installed `circuit_builder_main` utility can be used to compile
+circuits.
+See link:CircuitBuilderREADME.adoc[`CircuitBuilderREADME.adoc`] for more
+information on using this utility.
+
+== Using the library
+
+The main API is the `{MpcTask}` Java class, which can be used to
+securely evaluate an arbitrary circuit.
+Underneath this class lies the core MPC engine, which is a native
+library written in {cpp} called `bmc`.
+The `{MpcTask}` class calls the `bmc` native library using JNI.
+
+All parties run the circuit evaluation at the same time and communicate
+with each other using the `{MpcTask}.Channel` interface, which you must
+implement for each type of network channel you wish to use:
+
+* {empty}
+The `void send(byte[] buf)` method should send all `buf.length` bytes in
+`buf` to the other party, or throw an exception upon error.
++
+The ongoing computation may call the `send()` method from multiple
+threads at the same time.
+However, it is guaranteed that, for each channel, only one `send()` call
+will be occurring on that channel at any given time.
+
+* {empty}
+For receiving bytes, there are two options:
+
+.. {empty}
+If you want a _push channel_, meaning you'll call the `{MpcTask}.recv()`
+method to feed bytes into the ongoing computation as you receive them
+(in another thread), then you need not implement anything but the
+`send()` method.
++
+You can call the `{MpcTask}.recv()` method from multiple threads at the
+same time.
+However, you must guarantee that, for each channel, only one call will
+be occurring on that channel at any given time.
+
+.. {empty}
+If you want a _pull channel_, meaning the ongoing computation will call
+back to you (from an unspecified thread) to receive bytes as it needs
+them, then you need to implement the `recv()` and `isPush()` methods.
+The `void recv(byte[] buf)` method should fill `buf` with the next
+`buf.length` bytes received from the other party, or throw an exception
+upon error.
+The `boolean isPush()` method should return `false` to indicate that
+this is a pull channel.
++
+The ongoing computation may call the `recv()` method from multiple
+threads at the same time.
+However, it is guaranteed that, for each channel, only one `recv()` call
+will be occurring on that channel at any given time.
+
+Before you can use the `MpcTask` class, you must load the `bmc` native
+library along with its prerequisite libraries,
+link:http://www.lysator.liu.se/~nisse/nettle/[Nettle]
+and
+link:https://gmplib.org/[GMP].
+This is typically done with the `{System_loadLibrary}()` method.
+Be sure to do this in the following order:
+
+[source,subs="{subs_source}"]
+----
+{System_loadLibrary}("c++_shared");
+{System_loadLibrary}("gmp");
+{System_loadLibrary}("nettle");
+{System_loadLibrary}("bmc");
+----
+
+You may need to use the `{System_load}()` method for any `.so` library
+files that do not match the typical `lib__foo__.so` naming form, such as
+`libnettle.so.6`.
+This method takes an absolute path to the library file to load, so
+something like
+`{System_load}({getApplicationInfo}().{nativeLibraryDir} + "/libnettle.so.6")`
+should work.
+
+After you have the `{MpcTask}.Channel` interface implemented and the
+native libraries loaded, you're ready to create an `{MpcTask}`.
+
+First, you need to pick a circuit for the parties to evaluate.
+Various circuit files are provided in the
+link:src/circuits[`src/circuits`]
+directory.
+Each circuit is designed for a specific number of parties `__n__`, and
+each party must provide an appropriate input string to the circuit.
+The circuit produces an output string, which is a comma separated list
+of numbers.
+All parties receive the same output string.
+
+For the `coffeeshop_*.cbg` circuits, `__n__` is indicated in the
+filename, and the input string for party `__i__`
+(where `0 &#8804; __i__ < __n__`)
+is of the form
+`x__i___lat=__a__,x__i___lng=__b__`,
+where `__a__` and `__b__` are integers.
+The output string is a list of two integers that are the sum of all
+parties' `__a__` values and the sum of all parties' `__b__` values,
+respectively.
+For example, with two parties with input strings `x0_lat=1,x0_lng=-1`
+and `x1_lat=1,x1_lng=-1`, the output string will be `2,-2`.
+
+You'll need to make the circuit files be stored on disk in your Android
+project so the native code can access them, which unfortunately takes
+some work.
+You can do this by adding the files to the `assets` folder of your
+Android project and adding code to write them to disk as necessary.
+You can open an asset as an `{InputStream}` with the
+`{Context_getAssets}()` and `{AssetManager_open}()` methods, and you can
+write the asset to disk somewhere in the directory returned by the
+`{Context_getFilesDir}()` method.
+
+Next, you need to create a list of `__n__` channels for the `{MpcTask}`
+to use to communicate with the other `__n__-1` parties.
+The list should have a `null` at the index of this party itself (which
+is why the list has `__n__` entries, not `__n__-1`).
+
+Now you're ready to create an `{MpcTask}`:
+
+[source,subs="{subs_source}"]
+----
+{MpcTask} mpcTask = new {MpcTask}(
+  circuitFile,
+  inputString,
+  channelList,
+  true // whether to enable logging
+);
+----
+
+Constructing the `{MpcTask}` merely prepares it to run.
+To actually run it, the `{MpcTask}` class implements the
+`{Callable}<{String}>` interface, which you can use in any normal way.
+The simplest way is to call the `call()` method in the current thread:
+
+[source,subs="{subs_source}"]
+----
+{String} result = mpcTask.call();
+----
+
+You can also call the `{MpcTask}.getLog()` method to retrieve the log
+after the `call()` method returns or throws an exception.
+If logging was enabled when the `{MpcTask}` was created and the log was
+successfully captured, this method returns the log as a `{String}`.
+Otherwise, it returns `null`.
+The log can be particularly helpful for diagnosing errors.
+
+== License
+
+PULSAR-MPC is licensed under the MIT license.
+
+== Acknowledgments
+
+This work was supported by DARPA and NIWC Pacific under contract
+N66001-15-C-4065.
+The U.S. Government is authorized to reproduce and distribute reprints
+for Governmental purposes not withstanding any copyright notation
+thereon.
+The views, opinions, and/or findings expressed are those of the
+author(s) and should not be interpreted as representing the official
+views or policies of the Department of Defense or the U.S. Government.
+
+== Contributors
+
+* Paul Bunn ++<paul@stealthsoftwareinc.com>++
+* Quinn Grier ++<quinn@stealthsoftwareinc.com>++
+* Steve Lu ++<steve@stealthsoftwareinc.com>++
+
+== Attributions
+
+See the link:ATTRIBUTIONS.adoc[] file.
+
+== Distribution Statement
+
+Distribution Statement "A"
+(Approved for Public Release, Distribution Unlimited)
+
+//

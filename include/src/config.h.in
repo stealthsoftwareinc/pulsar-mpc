@@ -1,0 +1,295 @@
+/* include/src/config.h.in.  Generated from configure.ac by autoheader.  */
+
+/* Define to a character string literal that contains the suffix that the C
+   compiler adds to executable files. For example, on Unix-like systems this
+   should usually be "", and on Windows systems this should usually be ".exe".
+   */
+#undef CEXEEXT
+
+/* Result of checking openssl -non-fips-allow. */
+#undef GATBPS_HAVE_NON_FIPS_ALLOW
+
+/* git command */
+#undef GIT
+
+/* Result of checking for AES-NI. */
+#undef HAVE_AES_NI
+
+/* Result of checking CFLAGS += -maes (run). */
+#undef HAVE_CFLAG_MAES
+
+/* Result of checking CFLAGS += -maes (compile 1). */
+#undef HAVE_CFLAG_MAES_COMPILE_1
+
+/* Result of checking CFLAGS += -maes (compile 2). */
+#undef HAVE_CFLAG_MAES_COMPILE_2
+
+/* Result of checking CFLAGS += -msse4.1. */
+#undef HAVE_CFLAG_MSSE4_1
+
+/* Result of checking CXXFLAGS += -maes (run). */
+#undef HAVE_CXXFLAG_MAES
+
+/* Result of checking CXXFLAGS += -maes (compile 1). */
+#undef HAVE_CXXFLAG_MAES_COMPILE_1
+
+/* Result of checking CXXFLAGS += -maes (compile 2). */
+#undef HAVE_CXXFLAG_MAES_COMPILE_2
+
+/* Result of checking CXXFLAGS += -msse4.1. */
+#undef HAVE_CXXFLAG_MSSE4_1
+
+/* Define to 1 if you have the <dlfcn.h> header file. */
+#undef HAVE_DLFCN_H
+
+/* git command availability */
+#undef HAVE_GIT
+
+/* Define to 1 if you have the <inttypes.h> header file. */
+#undef HAVE_INTTYPES_H
+
+/* Result of checking JNI. */
+#undef HAVE_JNI
+
+/* Define to 1 if you have the <memory.h> header file. */
+#undef HAVE_MEMORY_H
+
+/* Define to 1 if you have the <stdint.h> header file. */
+#undef HAVE_STDINT_H
+
+/* Define to 1 if you have the <stdlib.h> header file. */
+#undef HAVE_STDLIB_H
+
+/* Define to 1 if you have the <strings.h> header file. */
+#undef HAVE_STRINGS_H
+
+/* Define to 1 if you have the <string.h> header file. */
+#undef HAVE_STRING_H
+
+/* Define to 1 if you have the <sys/stat.h> header file. */
+#undef HAVE_SYS_STAT_H
+
+/* Define to 1 if you have the <sys/types.h> header file. */
+#undef HAVE_SYS_TYPES_H
+
+/* tar command availability */
+#undef HAVE_TAR
+
+/* Define to 1 if you have the <unistd.h> header file. */
+#undef HAVE_UNISTD_H
+
+/* xz command availability */
+#undef HAVE_XZ
+
+/* Define to the sub-directory where libtool stores uninstalled libraries. */
+#undef LT_OBJDIR
+
+/* Name of package */
+#undef PACKAGE
+
+/* Define to the address where bug reports for this package should be sent. */
+#undef PACKAGE_BUGREPORT
+
+/* Define to a character string literal that contains the appropriate
+   proleptic Gregorian date in YYYY-MM-DD form, where the year may be preceded
+   by a "+" character and may have any number of digits, including leading
+   zeros. */
+#undef PACKAGE_DATE
+
+/* Define to the day of PACKAGE_DATE as an unsuffixed decimal integer
+   constant. */
+#undef PACKAGE_DATE_DAY
+
+/* Define to a character string literal that contains the DD component of
+   PACKAGE_DATE. */
+#undef PACKAGE_DATE_DAY_ZPAD
+
+/* Define to the integer constant 1 if PACKAGE_DATE_YEAR is a leap year, or
+   the integer constant 0 if not. */
+#undef PACKAGE_DATE_IS_LEAP_YEAR
+
+/* Define to the month of PACKAGE_DATE as an unsuffixed decimal integer
+   constant. */
+#undef PACKAGE_DATE_MONTH
+
+/* Define to the same character string literal as PACKAGE_DATE_MONTH_NAME but
+   limited to three characters in length. */
+#undef PACKAGE_DATE_MONTH_ABBR
+
+/* Define to a character string literal that contains the capitalized full
+   month name of PACKAGE_DATE. */
+#undef PACKAGE_DATE_MONTH_NAME
+
+/* Define to a character string literal that contains the MM component of
+   PACKAGE_DATE. */
+#undef PACKAGE_DATE_MONTH_ZPAD
+
+/* Define to the same character string literal as PACKAGE_DATE but with each
+   "-" character preceded by a "\" character. */
+#undef PACKAGE_DATE_TROFF
+
+/* Define to the year of PACKAGE_DATE as an unsuffixed decimal integer
+   constant. */
+#undef PACKAGE_DATE_YEAR
+
+/* Define to a character string literal that contains PACKAGE_DATE_YEAR
+   preceded by as many zeros as necessary to make it at least four characters
+   long. Note that none are necessary if PACKAGE_DATE_YEAR is larger than 999.
+   */
+#undef PACKAGE_DATE_YEAR_ZPAD
+
+/* Define to the full name of this package. */
+#undef PACKAGE_NAME
+
+/* Define to the full name and version of this package. */
+#undef PACKAGE_STRING
+
+/* Define to the one symbol short name of this package. */
+#undef PACKAGE_TARNAME
+
+/* Define to the home page for this package. */
+#undef PACKAGE_URL
+
+/* Define to the version of this package. */
+#undef PACKAGE_VERSION
+
+/* Define to a character string literal that contains the Debian version
+   number of PACKAGE_VERSION. If PACKAGE_VERSION does not contain a "-"
+   character, then this should be PACKAGE_VERSION. Otherwise, this should be
+   PACKAGE_VERSION with the "-" character replaced with a "~" character. For
+   example, if PACKAGE_VERSION were "0.1.0", then this should be "0.1.0", and
+   if PACKAGE_VERSION were "0.1.0-4927+g88a52bb", then this should be
+   "0.1.0~4927+g88a52bb". */
+#undef PACKAGE_VERSION_DEB
+
+/* Define to the same character string literal as PACKAGE_VERSION_DEB but with
+   each "." character replaced with ".@:". For example, if PACKAGE_VERSION_DEB
+   were "0.1.0", then this should be "0.@:1.@:0". */
+#undef PACKAGE_VERSION_DEB_TEXI
+
+/* Define to a character string literal that contains the Docker version
+   number of PACKAGE_VERSION. If PACKAGE_VERSION does not contain a "-"
+   character, then this should be PACKAGE_VERSION. Otherwise, this should be
+   the text up to but not including the "+" character. For example, if
+   PACKAGE_VERSION were "0.1.0", then this should be "0.1.0", and if
+   PACKAGE_VERSION were "0.1.0-4927+g88a52bb", then this should be
+   "0.1.0-4927". */
+#undef PACKAGE_VERSION_DOCKER
+
+/* Define to the same character string literal as PACKAGE_VERSION_DOCKER but
+   with each "." character replaced with ".@:". For example, if
+   PACKAGE_VERSION_DOCKER were "0.1.0", then this should be "0.@:1.@:0", and
+   if PACKAGE_VERSION_DOCKER were "0.1.0-4927", then this should be
+   "0.@:1.@:0-4927". */
+#undef PACKAGE_VERSION_DOCKER_TEXI
+
+/* Define to a character string literal that contains the Git description of
+   PACKAGE_VERSION. If PACKAGE_VERSION does not contain a "-" character, then
+   this should be a "v" character followed by PACKAGE_VERSION. Otherwise, this
+   should be a "u" character followed by PACKAGE_VERSION, and the "+"
+   character should be replaced with a "-" character. For example, if
+   PACKAGE_VERSION were "0.1.0", then this should be "v0.1.0", and if
+   PACKAGE_VERSION were "0.1.0-4927+g88a52bb", then this should be
+   "u0.1.0-4927-g88a52bb". */
+#undef PACKAGE_VERSION_GIT
+
+/* Define to the same character string literal as PACKAGE_VERSION_GIT but with
+   each "." character replaced with ".@:". For example, if PACKAGE_VERSION_GIT
+   were "v0.1.0", then this should be "v0.@:1.@:0", and if PACKAGE_VERSION_GIT
+   were "u0.1.0-4927-g88a52bb", then this should be
+   "u0.@:1.@:0-4927-g88a52bb". */
+#undef PACKAGE_VERSION_GIT_TEXI
+
+/* */
+#undef PACKAGE_VERSION_LIBTOOL_A
+
+/* */
+#undef PACKAGE_VERSION_LIBTOOL_C
+
+/* */
+#undef PACKAGE_VERSION_LIBTOOL_R
+
+/* */
+#undef PACKAGE_VERSION_MAJOR
+
+/* */
+#undef PACKAGE_VERSION_MINOR
+
+/* */
+#undef PACKAGE_VERSION_PATCH
+
+/* Define to a character string literal that contains the RPM release number
+   of PACKAGE_VERSION. If PACKAGE_VERSION does not contain a "-" character,
+   then this should be "1". Otherwise, this should be "0." followed by the
+   text after the "-" character, and the "+" character should be replaced with
+   a "." character. For example, if PACKAGE_VERSION were "0.1.0", then this
+   should be "1", and if PACKAGE_VERSION were "0.1.0-4927+g88a52bb", then this
+   should be "0.4927.g88a52bb". */
+#undef PACKAGE_VERSION_RPM_R
+
+/* Define to the same character string literal as PACKAGE_VERSION_RPM_R but
+   with each "." character replaced with ".@:". For example, if
+   PACKAGE_VERSION_RPM_R were "1", then this should be "1", and if
+   PACKAGE_VERSION_RPM_R were "0.4927.g88a52bb", then this should be
+   "0.@:4927.@:g88a52bb". */
+#undef PACKAGE_VERSION_RPM_R_TEXI
+
+/* Define to a character string literal that contains the RPM version number
+   of PACKAGE_VERSION. If PACKAGE_VERSION does not contain a "-" character,
+   then this should be PACKAGE_VERSION. Otherwise, this should be the text up
+   to but not including the "-" character. For example, if PACKAGE_VERSION
+   were "0.1.0" or "0.1.0-4927+g88a52bb", then this should be "0.1.0". */
+#undef PACKAGE_VERSION_RPM_V
+
+/* Define to a character string literal that contains PACKAGE_VERSION_RPM_V
+   followed by a "-" character followed by PACKAGE_VERSION_RPM_R. For example,
+   if PACKAGE_VERSION_RPM_V were "0.1.0" and PACKAGE_VERSION_RPM_R were
+   "0.4927.g88a52bb", then this should be "0.1.0-0.4927.g88a52bb". */
+#undef PACKAGE_VERSION_RPM_VR
+
+/* Define to the same character string literal as PACKAGE_VERSION_RPM_VR but
+   with each "." character replaced with ".@:". For example, if
+   PACKAGE_VERSION_RPM_VR were "0.1.0-0.4927.g88a52bb", then this should be
+   "0.@:1.@:0-0.@:4927.@:g88a52bb". */
+#undef PACKAGE_VERSION_RPM_VR_TEXI
+
+/* Define to the same character string literal as PACKAGE_VERSION_RPM_V but
+   with each "." character replaced with ".@:". For example, if
+   PACKAGE_VERSION_RPM_V were "0.1.0", then this should be "0.@:1.@:0". */
+#undef PACKAGE_VERSION_RPM_V_TEXI
+
+/* Define to the same character string literal as PACKAGE_VERSION but with
+   each "." character replaced with ".@:". For example, if PACKAGE_VERSION
+   were "0.1.0", then this should be "0.@:1.@:0", and if PACKAGE_VERSION were
+   "0.1.0-4927+g88a52bb", then this should be "0.@:1.@:0-4927+g88a52bb". */
+#undef PACKAGE_VERSION_TEXI
+
+/* Define to 1 if you have the ANSI C header files. */
+#undef STDC_HEADERS
+
+/* tar command */
+#undef TAR
+
+/* Version number of package */
+#undef VERSION
+
+/* Result of checking for permission to use AES-NI. */
+#undef WITH_AES_NI
+
+/* Result of checking for insistence to use AES-NI. */
+#undef WITH_AES_NI_OR_DIE
+
+/* Result of checking CFLAGS += -maes (cross). */
+#undef WITH_CROSS_CFLAG_MAES
+
+/* Result of checking CXXFLAGS += -maes (cross). */
+#undef WITH_CROSS_CXXFLAG_MAES
+
+/* Result of checking permission to use JNI. */
+#undef WITH_JNI
+
+/* Result of checking insistence to use JNI. */
+#undef WITH_JNI_OR_DIE
+
+/* xz command */
+#undef XZ

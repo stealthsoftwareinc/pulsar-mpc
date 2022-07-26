@@ -1,0 +1,8 @@
+{
+
+  "handler": "sst_ajh_download",
+
+  "type": "copy",
+  "file": "build-aux/downloads/android-ndk-r19c-linux-x86_64.zip"
+
+}

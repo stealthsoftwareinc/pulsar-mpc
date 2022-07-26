@@ -1,0 +1,439 @@
+//
+// Copyright (C) 2021 Stealth Software Technologies, Inc.
+//
+// Permission is hereby granted, free of charge, to any person
+// obtaining a copy of this software and associated documentation
+// files (the "Software"), to deal in the Software without
+// restriction, including without limitation the rights to use,
+// copy, modify, merge, publish, distribute, sublicense, and/or
+// sell copies of the Software, and to permit persons to whom the
+// Software is furnished to do so, subject to the following
+// conditions:
+//
+// The above copyright notice and this permission notice shall be
+// included in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+// OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+// NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+// WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+// FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+// OTHER DEALINGS IN THE SOFTWARE.
+//
+
+[#sec_circuit_builder]
+= Circuit Builder
+:toc:
+
+:subs_source: attributes,specialchars,quotes,macros
+
+[#sec_description]
+== Description
+
+A tool for converting an arbitrary function -- in human-readable format consisting of a mathematical expression involving variables, values (numbers), and operations -- into a circuit (wires and gates) that represents the function.
+
+[#sec_overview]
+== Overview
+
+The circuit builder tool takes as input a _function file_ (with file extension `.function`), which must be presented/formatted in the language described below (this language is meant to be human-readable, with intuitive syntax), and outputs the corresponding circuit (file), which represents all the wiring and gate structure of the circuit/functionality, and has a format that is ingestible by the Coffeebreak MPC Engine.
+
+[#sec_usage]
+== Usage
+
+The circuit builder tool is run via command-line:
+
+----
+circuit_builder_main <function_file> [--add_lookahead <n>]
+----
+
+`<function_file>` is the (path to the) function file, whose format is discussed below. The `--add_lookahead` argument can be used to optimize the circuit logic for addition: there is a trade-off between overall number of (`AND`) gates and circuit depth. Namely, a smaller lookahead value prefers fewer overall gates and deeper circuits, and vice-versa for larger lookahead values. The lookahead value `<n>` should be a value between 1 and `sqrt(__N__)`, where `__N__` is the number of bits in the values being added.
+
+The output of the tool is a circuit file (with file extension `.cbg`) representing the specified function. The path to the output circuit file is specified in the last line of the input `<function_file>` provided to the tool.
+
+[#sec_examples]
+== Examples
+
+Before specifying the precise syntax/language of the function file, we demonstrate some examples.
+
+.{empty}
+[example]
+====
+Party 0 inputs `x`,
+party 1 inputs `y`,
+and both parties obtain
+`x > y`
+as output.
+
+.Function file
+[source,subs="{subs_source}"]
+----
+Circuit Function:
+f(x; y) = (
+  (BOOL)[A]: x > y
+)
+
+Party Inputs (0):
+(INT8) x
+
+Party Inputs (1):
+(INT8) y
+
+Output:
+greater_than.cbg
+----
+====
+
+.{empty}
+[example]
+====
+Party 0 inputs `x`,
+party 1 inputs `y`,
+party 2 inputs `z`,
+and all parties obtain
+`x + y + z`
+as output.
+
+.Function file
+[source,subs="{subs_source}"]
+----
+Circuit Function:
+f(x; y; z) = (
+  (INT8)[A]: x + y + z
+)
+
+Party Inputs (0):
+(INT8) x
+
+Party Inputs (1):
+(INT8) y
+
+Party Inputs (2):
+(INT8) z
+
+Output:
+3_party_sum.cbg
+----
+====
+
+.{empty}
+[example]
+====
+Party 0 inputs `x_lat` and `x_lng`,
+party 1 inputs `y_lat` and `y_lng`,
+party 2 inputs `z_lat` and `z_lng`,
+and all parties obtain
+`x_lat + y_lat + z_lat` and `x_lng + y_lng + z_lng`
+as two outputs.
+
+.Function file
+[source,subs="{subs_source}"]
+----
+Circuit Function:
+f(x_lat, x_lng; y_lat, y_lng; z_lat, z_lng) = (
+  (INT8)[A]: x_lat + y_lat + z_lat
+  (INT8)[A]: x_lng + y_lng + z_lng
+)
+
+Party Inputs (0):
+(INT8) x_lat
+(INT8) x_lng
+
+Party Inputs (1):
+(INT8) y_lat
+(INT8) y_lng
+
+Party Inputs (2):
+(INT8) z_lat
+(INT8) z_lng
+
+Output:
+3_party_lat_lng_sum.cbg
+----
+====
+
+[#sec_function_file_syntax]
+== Function File Syntax
+
+The function file (the unique input to the Circuit Builder Tool) should specify the desired functionality (inputs, outputs, formula) as well as the name of the file to write the output circuit.  The function file must have the following syntax:
+
+[source,subs="{subs_source}"]
+----
+Circuit Function:
+#Specify input variables, formulas, and outputs.
+
+Common Terms:
+#(Optional) Complicated formulas are simplified by using intermediate variables/expressions (supports recursive/nested usage).
+
+Party Inputs (N):
+#Specify Party N's Inputs.
+
+Output:
+#Specify output filename.
+----
+
+[#sec_function_description]
+=== Function Description
+
+Line 1 should simply be the string `Circuit Function`, and then a colon:
+
+[source,subs="{subs_source}"]
+----
+Circuit Function:
+----
+
+Line 2 should be the Function API, i.e., the LHS of the function specification, which simply lists the variable names for each Party's inputs (a single party's inputs are separated by `,` characters, while a `;` character marks the end of one party's inputs and the beginning of the next party's inputs), followed by an equals sign and an open parentheses (marking the start of the RHS function formula).
+For example:
+
+[source,subs="{subs_source}"]
+----
+f(x_lat, x_lng; y_lat, y_lng; z_lat, z_lng) = (
+----
+
+The next lines are the function outputs, which are one or more formulas involving the input variables (and optionally variables from the `Common Terms` section; see below). Output formulas must be specified via format:
+
+[source,subs="{subs_source}"]
+----
+(Output Data Type) [Output Recipient]: Output Formula;
+----
+
+In particular, each line should begin with a specification of the datatype of this output (enclosed in parentheses), followed by which party or parties should receive this output (enclosed in square brackets), followed by a colon and then the actual output formula (which is a function of the input variables), where:
+
+* {empty}
+The datatype should be one of the following:
++
+[source,subs="{subs_source}"]
+----
+BOOL, INT__N__, UINT__N__
+----
++
+For the `[U]INT__N__` types, `__N__` denotes the number of bits required to represent the output datatype, and can be either 2, 4, 8, 16, 32, or 64.
+
+* {empty}
+The output recipient should be a comma-separated list of the Party (indices) that should get the output, or one of the two special characters `A` (all parties) or `N` (none).
+
+* {empty}
+The mathematical formula/expression can involve constants, various operations, and variables.  A list of supported expressions/operations is provided in the <<sec_supported_operations>> section below.
+
+Each output line should end with a semicolon, marking the end of the formula output. Finally, the end of the formula specification is simply a closing parentheses (matching the open parentheses at the end of line 2).
+
+[#sec_common_terms]
+=== Common Terms (Optional)
+
+If present, the Common Terms block is identified by the keyword `Common Terms` followed by a colon:
+
+[source,subs="{subs_source}"]
+----
+Common Terms:
+----
+
+After the `Common Terms` line, the next lines describe intermediate variables/expressions, and have the following format:
+
+[source,subs="{subs_source}"]
+----
+  NewVariableName = Formula;
+----
+
+where `NewVariableName` is arbitrary (user-defined), and `Formula` satisfies the same rules as the RHS of the function specification (see also the <<sec_supported_operations>> section below), with the exception that the variables that appear must either be Input variables, or must themselves be Common Terms variables that were defined _higher_ in the Common Terms block.
+
+For example, consider a desired functionality:
+
+[source,subs="{subs_source}"]
+----
+f(x1, x2; y1, y2) = If (x1 > y1): Then output x2; Otherwise output y2
+----
+
+Without the Common Terms block, this could be expressed using only the basic operation types (see the <<sec_supported_operations>> section below) as:
+
+[source,subs="{subs_source}"]
+----
+f(x1, x2; y1, y2) = (
+  (x1 > y1) * x2 + !(x1 > y1) * y2;
+)
+----
+
+However, using Common Terms, this can be simplified as:
+
+[source,subs="{subs_source}"]
+----
+f(x1, x2; y1, y2) = (
+  z * x2 + !z * y2;
+)
+Common Terms:
+  z = x1 > y1;
+----
+
+Notes:
+
+* {empty}
+Common Term variable names (and more generally, all variable names) should NOT be substrings of any other variables. Thus, having a variable `x` and another `x2` may lead to unexpected behavior.
+* {empty}
+Common terms can be nested. For example, perhaps `z` in the above example represents something more complicated, e.g.
+
+[source,subs="{subs_source}"]
+----
+pass:[z = (x1 > y1) OR ((x1 <= y1) AND (x2 > y2));]
+----
+
+In this case, you'd want to use a common term for `(x1 > y1)`, and write:
+
+[source,subs="{subs_source}"]
+----
+Common Terms:
+  w = (x1 > y1);
+  v = (x2> y2);
+  z = w OR (!w AND v);
+----
+
+[#sec_inputs]
+=== Inputs
+
+The next line in the function file should simply be the string `Party Inputs (0)` followed by a colon:
+
+[source,subs="{subs_source}"]
+----
+Party Inputs (0):
+----
+
+The next lines describe Party 0's inputs. These lines have format:
+
+[source,subs="{subs_source}"]
+----
+  (DataType) VariableName
+----
+
+where the datatype is enclosed in parentheses, followed by the variable name of the input.
+The number of lines for Party 0's inputs should equal the number of Party 0's inputs (which should match the length of the comma-separated list used in the LHS of the function API on line 2 of the function file), and the set of VariableNames themeselves should be consistent with line 2 of the function file (though they are allowed to be presented in arbitrary order). The valid datatypes are the same as previously discussed in the Function Description section above.
+
+For each party participating in the computation, there should be a corresponding `Party Inputs (i):` block.
+
+[#sec_output_file]
+=== Output File
+
+After the Party Inputs block(s), there should be a line with keyword "Output" followed by a colon:
+
+[source,subs="{subs_source}"]
+----
+Output:
+----
+Then there should be one final line, which specifies the path and filename of the output circuit file.
+
+[#sec_supported_operations]
+== Supported Operations
+
+* {empty}
+Constants: Only integer datatypes are allowed. Constants are assumed to be expressed base-10 (binary, hex, decimal/floating point, etc. are _not_ supported).
+
+* {empty}
+Boolean Operators:
+`AND`,
+`NAND`,
+`OR`,
+`NOR`,
+`NOT`,
+`XOR`,
+`EQ`,
+`NEQ`,
+`LT`,
+`GT`,
+`LTE`,
+and
+`GTE`.
++
+All boolean operations should be written using the above keywords, as opposed to a symbol traditionally used to represent them. This convention is due to potential ambiguity because of overlapping meaning for various symbols. For example, we demand the use of `NOT` instead of e.g. `^` or `!` due to the fact that `!` also denotes factorial and `^` denotes exponent. Similarly, for comparisons, we want to be able to specify either bit-wise comparison versus integer (numeric) comparison. For example, `5 == 3` would output `0` (for `false`, since 5 does not equal 3), but `5 EQ 3` would output `9`, since as bits `5 = 0101` and `3 = 0011`, and performing boolean operation `EQ` on their bitstrings results in `1001 = 9` (this example assumes all datatypes are UINT4, the result would be different if the numbers were viewed as a different datatype).
+
+* {empty}
+(Integer) Comparison Operators:
+`==`,
+`!=`,
+`<`,
+`>`,
+`<=`,
+and
+`>=`.
+
+* {empty}
+Arithmetic Operators:
+`+`,
+`-`,
+`*`,
+`^` (exponentiation),
+`!` (factorial),
+and
+`||` (absolute value).
++
+Notes: For exponents (the `^` operator), there is a restriction on the exponent (independent of whether it is constant or a variable): It must be unsigned (positive), and cannot be larger than 63. This latter restriction means that if using a variable for the exponent, that variable should be a datatype that has at most 6 bits (so `BOOL`, `UINT2`, `UINT4`, or `UINT8`; we allow `UINT8` because there is no datatype for 6 bits).  Also note that factorial is only supported for constants/variables whose value is at most 20. Finally, notice that division is not currently supported, nor is fractional exponentiation (e.g. square root).
+
+* {empty}
+Vector Operators.
++
+In general, all functions are assumed to be one dimensional (non-vectors).  Vector-valued _outputs_ are supported by having multiple output formulas (see <<sec_function_description>> section above).  In general we do not support vector-valued inputs, with the following exceptions:
+`VEC()`,
+`MIN()`,
+`MAX()`,
+`ARGMIN()`,
+`ARGMAX()`,
+and
+`INNER_PRODUCT()`,
+where:
++
+`VEC`::
+Creates a vector of arbitrary length. Format is: `VEC(x1, x2, &#8230;, xN)`
+`MIN`, `MAX`::
+Take arbitrary (comma-separated) list of arguments.
+`ARGMIN`, `ARGMAX`::
+Given a list (vector) of values, returns a (characteristic/selection) vector that specifies the location of the minimum (resp. maximum). E.g. `ARGMIN(5, 3, 9, 4)` would output `(0, 1, 0, 0)`, since the second value (3) is the minimum. In case of ties, only one of the locations (the highest index) is selected; e.g. `ARGMIN(1, 2, 1)` would output `(0, 0, 1)`.
+`INNER_PRODUCT`::
+Computes the inner-product of two vectors.
+
+[#sec_notes]
+== Notes
+
+* {empty}
+If the functionality dictates a single output, the output formula lines can be combined with function API on Line 2.
+
+* {empty}
+For each Output line, the specification of datatype and who gets the output is optional. If the line does not begin with: `(datatype)[Recipient]` then the default will be to infer the output type (based on the datatypes of the variables, and the operations performed, in the formula) and to give that output value to all parties.
+
+* {empty}
+Variable Names.
+The names used for the input variables, both in the function API (Line 2) as well as when specifying the Party's inputs, can be anything, with the following requirements:
+
+  .. {empty}
+  Variable names must have a first character in `[a-zA-z_]`, (optionally) followed by `[a-zA-Z0-9_]` character(s), and must not collide with a reserved keyword.
+
+  .. {empty}
+  Variable names should be distinct. So all of the inputs of a single Party should have distinct names (from each other), and no variable name should be common between the two parties. Moreover, variable names should not be substrings of other variable names. For example, having a variable `x` and another `x1` or `box` may lead to unexpected behavior.
+
+  .. {empty}
+  The set of variable names appearing on the LHS of the function description (Line 2) must exactly match the variable names used for the specification of each of the partys' inputs. There is no requirement about ordering with respect to LHS of Line 2 versus the order they appear under Party 0 (resp. Party 1) inputs.
+
+* {empty}
+Data Types.
+The circuit builder is sensitive to the datatypes specified. So, if a variable is declared as __un__signed (e.g. `UINT64`), and then you pass in a negative value, then the unexpected behavior will result. Similarly, if two values are added (or multiplied, etc.), and the result is too large to fit in the output data type (overflow), then results will be unexpected.
+
+* {empty}
+Whitespace/Readability.
+The tool that parses the input file will be agnostic of spacing (line breaks are also ignored for some of the blocks; namely the Function Description and Common Terms blocks). In particular, the parser will operate by identifying punctuation (commas, semicolons, parentheses, etc.) and special strings/ characters (e.g. the symbols for datatype and output recipient, and names for each block/section).
+Thus, the input file can use spacing and line breaks to make the file more human-readable. For example, if a particular output formula is complex (long), you can optionally break that formula onto multiple lines to make it easier to read; the key is the semicolon `;` separator which tells the program when the formula for that output value stops.
+
+* {empty}
+Special Characters.
+Special characters are reserved to specify: datatypes, output recipients, math symbols/operators, and file-formatting (e.g. commas, colons, semicolons, parentheses, square brackets, etc). Specifically, reserved datatypes:
+`BOOL`,
+`INT2`,
+`UINT2`,
+`INT4`,
+`UINT4`,
+`INT8`,
+`UINT8`,
+`INT16`,
+`UINT16`,
+`INT32`,
+`UINT32`,
+`INT64`,
+and
+`UINT64`.
++
+Also, special characters `N` and `A` are reserved to specify the output recipient ("None" and "All", respectively).

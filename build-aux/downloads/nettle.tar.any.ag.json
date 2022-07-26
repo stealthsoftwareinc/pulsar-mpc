@@ -1,0 +1,8 @@
+{
+
+  "handler": "sst_ajh_download",
+
+  "type": "copy",
+  "file": "build-aux/downloads/nettle-3.4.tar.gz"
+
+}

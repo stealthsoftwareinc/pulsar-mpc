@@ -1,0 +1,18 @@
+{
+
+  "handler": "sst_ajh_download",
+
+  "hashes": {
+    "md5": "49fff19f97eb7b248f5d063ab8318a50",
+    "sha1": "fd94d0be6017c6acbd193eb95e09cf4b6f61b834",
+    "sha224": "484ecff1c655dd3dc21f39dce9781d17f12e89362f45bd2c09b4ee67",
+    "sha256": "4c62514ec9c2309315fd84da6d52465651cdb68605058f231f1e480fcf2692e1",
+    "sha384": "2b381ed563a5258745f85042dba68f7cf0c2d5b392e226c6508018a81853d95f215b8ec8b9fa380726733b273251b33c",
+    "sha512": "9042970d78baf48a3286edb765103846ce0ba086888de94212a78129402de5ca3db7c7d5eba81e9c89af1cb98ad99ea20a0f593bfb1702b99e101555a433d670"
+  },
+
+  "urls": [
+    "https://dl.google.com/android/repository/android-ndk-r19c-linux-x86_64.zip"
+  ]
+
+}

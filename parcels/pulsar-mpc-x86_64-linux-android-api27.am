@@ -1,0 +1,140 @@
+##
+## Copyright (C) 2021 Stealth Software Technologies, Inc.
+##
+## Permission is hereby granted, free of charge, to any person
+## obtaining a copy of this software and associated documentation
+## files (the "Software"), to deal in the Software without
+## restriction, including without limitation the rights to use,
+## copy, modify, merge, publish, distribute, sublicense, and/or
+## sell copies of the Software, and to permit persons to whom the
+## Software is furnished to do so, subject to the following
+## conditions:
+##
+## The above copyright notice and this permission notice shall be
+## included in all copies or substantial portions of the Software.
+##
+## THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+## EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+## OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+## NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+## HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+## WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+## FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+## OTHER DEALINGS IN THE SOFTWARE.
+##
+
+## begin_rules
+
+.PHONY: clean-parcels/pulsar-mpc-x86_64-linux-android-api27.tmp
+.PHONY: parcels/pulsar-mpc-VERSION-x86_64-linux-android-api27.tar
+.PHONY: parcels/pulsar-mpc-VERSION-x86_64-linux-android-api27.tar.xz
+
+clean-local: clean-parcels/pulsar-mpc-x86_64-linux-android-api27.tmp
+
+clean-parcels/pulsar-mpc-x86_64-linux-android-api27.tmp: FORCE
+	-rm -fr \
+  parcels/pulsar-mpc-x86_64-linux-android-api27.tmp \
+  parcels/pulsar-mpc-x86_64-linux-android-api27.tmp.tmp \
+;
+
+parcels/pulsar-mpc-VERSION-x86_64-linux-android-api27.tar: FORCE
+parcels/pulsar-mpc-VERSION-x86_64-linux-android-api27.tar: parcels/pulsar-mpc-$(PACKAGE_VERSION)-x86_64-linux-android-api27.tar
+parcels/pulsar-mpc-VERSION-x86_64-linux-android-api27.tar: parcels/pulsar-mpc-x86_64-linux-android-api27.ac
+parcels/pulsar-mpc-VERSION-x86_64-linux-android-api27.tar: parcels/pulsar-mpc-x86_64-linux-android-api27.am
+
+parcels/pulsar-mpc-VERSION-x86_64-linux-android-api27.tar.xz: FORCE
+parcels/pulsar-mpc-VERSION-x86_64-linux-android-api27.tar.xz: parcels/pulsar-mpc-$(PACKAGE_VERSION)-x86_64-linux-android-api27.tar.xz
+parcels/pulsar-mpc-VERSION-x86_64-linux-android-api27.tar.xz: parcels/pulsar-mpc-x86_64-linux-android-api27.ac
+parcels/pulsar-mpc-VERSION-x86_64-linux-android-api27.tar.xz: parcels/pulsar-mpc-x86_64-linux-android-api27.am
+
+parcels/pulsar-mpc-x86_64-linux-android-api27.tar: parcels/pulsar-mpc-x86_64-linux-android-api27.ac
+parcels/pulsar-mpc-x86_64-linux-android-api27.tar: parcels/pulsar-mpc-x86_64-linux-android-api27.am
+
+parcels/pulsar-mpc-x86_64-linux-android-api27.tar.xz: parcels/pulsar-mpc-x86_64-linux-android-api27.ac
+parcels/pulsar-mpc-x86_64-linux-android-api27.tar.xz: parcels/pulsar-mpc-x86_64-linux-android-api27.am
+
+parcels/pulsar-mpc-x86_64-linux-android-api27.tmp: pulsar-mpc-$(PACKAGE_VERSION).tar.gz
+parcels/pulsar-mpc-x86_64-linux-android-api27.tmp: parcels/pulsar-mpc-x86_64-linux-android-api27.ac
+parcels/pulsar-mpc-x86_64-linux-android-api27.tmp: parcels/pulsar-mpc-x86_64-linux-android-api27.am
+parcels/pulsar-mpc-x86_64-linux-android-api27.tmp: parcels/pulsar-mpc-x86_64-linux-android-api27/builder/Dockerfile
+parcels/pulsar-mpc-x86_64-linux-android-api27.tmp: build-aux/downloads/android-ndk-linux-x86_64.zip
+parcels/pulsar-mpc-x86_64-linux-android-api27.tmp: build-aux/downloads/gmp.tar.any
+parcels/pulsar-mpc-x86_64-linux-android-api27.tmp: build-aux/downloads/nettle.tar.any
+parcels/pulsar-mpc-x86_64-linux-android-api27.tmp: build-aux/downloads/openssl.tar.any
+parcels/pulsar-mpc-x86_64-linux-android-api27.tmp: build-aux/downloads/rabbitmq-c.tar.any
+	$(AM_V_at)$(GATBPS_RECIPE_MARKER_TOP)
+	$(AM_V_at)rm -fr $@ $@.tmp
+	$(AM_V_at){ \
+  $(MAKE) \
+    $(AM_MAKEFLAGS) \
+    $@.tmp/builder/Dockerfile \
+    $@.tmp/builder/bmc.tar.any \
+    $@.tmp/builder/gmp.tar.any \
+    $@.tmp/builder/ndk.zip \
+    $@.tmp/builder/nettle.tar.any \
+    $@.tmp/builder/openssl.tar.any \
+    $@.tmp/builder/rabbitmq-c.tar.any \
+  ; \
+  s=$$?; \
+  readonly s; \
+  case $$s in \
+    0) \
+    ;; \
+    *) \
+      rm -fr $@.tmp; \
+    ;; \
+  esac; \
+  exit $$s; \
+}
+	$(AM_V_GEN)$(GATBPS_V_NOP)
+	$(AM_V_at){ \
+  ( \
+    $(DOCKER) build \
+      --build-arg ARCH=x86_64 \
+      --build-arg LEVEL=27 \
+      --tag tmp$$$$ \
+      $@.tmp/builder \
+    || exit $$?; \
+    rm -r \
+      $@.tmp/builder \
+    || exit $$?; \
+    ( \
+      $(DOCKER) create \
+        --name tmp$$$$ \
+        tmp$$$$ \
+      || exit $$?; \
+      $(DOCKER) cp \
+        tmp$$$$:/x/overlay \
+        $@.tmp/pulsar-mpc-$(PACKAGE_VERSION)-x86_64-linux-android-api27 \
+      || exit $$?; \
+    ); \
+    s=$$?; \
+    readonly s; \
+    $(DOCKER) rm tmp$$$$; \
+    case $$s in \
+      0) \
+      ;; \
+      *) \
+        exit $$s; \
+      ;; \
+    esac; \
+    mv $@.tmp $@ || exit $$?; \
+  ); \
+  s=$$?; \
+  readonly s; \
+  rm -fr $@.tmp; \
+  case $$s in \
+    0) \
+    ;; \
+    *) \
+      rm -fr $@; \
+    ;; \
+  esac; \
+  exit $$s; \
+}
+	$(AM_V_at)$(GATBPS_RECIPE_MARKER_BOT)
+
+parcels/pulsar-mpc-x86_64-linux-android-api27.tmp.tmp/builder/Dockerfile: parcels/pulsar-mpc-x86_64-linux-android-api27.ac
+parcels/pulsar-mpc-x86_64-linux-android-api27.tmp.tmp/builder/Dockerfile: parcels/pulsar-mpc-x86_64-linux-android-api27.am
+
+## end_rules

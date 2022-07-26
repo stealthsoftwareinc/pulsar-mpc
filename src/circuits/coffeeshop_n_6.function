@@ -1,0 +1,33 @@
+# Circuit Function:
+#   f(x0_lat, x0_lng; x1_lat, x1_lng; x2_lat, x2_lng; x3_lat, x3_lng; x4_lat, x4_lng;
+#     x5_lat, x5_lng) = (
+#     (INT32)[A]: x0_lat + x1_lat + x2_lat + x3_lat + x4_lat + x5_lat;
+#     (INT32)[A]: x0_lng + x1_lng + x2_lng + x3_lng + x4_lng + x5_lng;
+#   )
+#
+# Party Inputs (0):
+#   (INT32) x0_lat
+#   (INT32) x0_lng
+#
+# Party Inputs (1):
+#   (INT32) x1_lat
+#   (INT32) x1_lng
+#
+# Party Inputs (2):
+#   (INT32) x2_lat
+#   (INT32) x2_lng
+#
+# Party Inputs (3):
+#   (INT32) x3_lat
+#   (INT32) x3_lng
+#
+# Party Inputs (4):
+#   (INT32) x4_lat
+#   (INT32) x4_lng
+#
+# Party Inputs (5):
+#   (INT32) x5_lat
+#   (INT32) x5_lng
+#
+# Output:
+CircuitFiles/coffeeshop_n_6.cbg

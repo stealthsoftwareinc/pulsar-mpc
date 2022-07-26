@@ -1,0 +1,18 @@
+{
+
+  "handler": "sst_ajh_download",
+
+  "hashes": {
+    "md5": "4c2625877503a4b140a6b7ad98b7d5c1",
+    "sha1": "0885385de11983c020ff0d47039987fe372160d2",
+    "sha224": "77bb764f97d1944f37908be1c985a58baa2a48604defab6546ad6525",
+    "sha256": "124f2d5115eee365df6cf3228ffbca6fc3911d16f8025bebd5b1c6e2fcfa7faf",
+    "sha384": "2f2a665a01ff492d51c1a0b8a9f305bb0d6ed4ec70f7d17725b729249c7aafde318829b821efef97159a173b0e4f4139",
+    "sha512": "ba2773391c03657455833b25423ea92bda79658a0e82063b2a37cded621894c80512595ff708246dcf53b59d544e7a656acd229055d7e89f54506353a1c8eaeb"
+  },
+
+  "urls": [
+    "https://dl.google.com/android/repository/commandlinetools-linux-7583922_latest.zip"
+  ]
+
+}

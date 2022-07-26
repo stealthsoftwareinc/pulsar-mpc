@@ -1,0 +1,99 @@
+#
+# Copyright (C) 2021 Stealth Software Technologies, Inc.
+#
+# Permission is hereby granted, free of charge, to any person
+# obtaining a copy of this software and associated documentation
+# files (the "Software"), to deal in the Software without
+# restriction, including without limitation the rights to use,
+# copy, modify, merge, publish, distribute, sublicense, and/or
+# sell copies of the Software, and to permit persons to whom the
+# Software is furnished to do so, subject to the following
+# conditions:
+#
+# The above copyright notice and this permission notice shall be
+# included in all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+# OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+# HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+# WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+# OTHER DEALINGS IN THE SOFTWARE.
+#
+
+on:
+  push:
+    branches:
+      - preview-*
+    tags:
+      - v*
+
+jobs:
+  build_release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: .github/workflows/build_release.bash
+        env:
+          GITHUB_MAVEN_PKG_URL: 'https://maven.pkg.github.com/${{ github.repository }}'
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GPG_PUBLIC_KEY: ${{ secrets.GPG_PUBLIC_KEY }}
+          GPG_SECRET_KEY: ${{ secrets.GPG_SECRET_KEY }}
+      - id: meta
+        run: |
+          tag_name=${GITHUB_REF##*/}
+          case $tag_name in preview-*)
+            tag_name=tag-$tag_name
+          esac
+          version=$(sh build-aux/gatbps-gen-version.sh) || exit
+          echo ::set-output name=tag_name::$tag_name || exit
+          echo ::set-output name=version::$version || exit
+      - id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.meta.outputs.tag_name }}
+          release_name: PULSAR-MPC ${{ steps.meta.outputs.version }}
+      - uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: pulsar-mpc-${{ steps.meta.outputs.version }}-android.tar.xz
+          asset_name: pulsar-mpc-${{ steps.meta.outputs.version }}-android.tar.xz
+          asset_content_type: application/octet-stream
+      - uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: pulsar-mpc-${{ steps.meta.outputs.version }}-android.tar.xz.sig
+          asset_name: pulsar-mpc-${{ steps.meta.outputs.version }}-android.tar.xz.sig
+          asset_content_type: application/octet-stream
+      - uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: pulsar-mpc-${{ steps.meta.outputs.version }}.aar
+          asset_name: pulsar-mpc-${{ steps.meta.outputs.version }}.aar
+          asset_content_type: application/octet-stream
+      - uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: pulsar-mpc-${{ steps.meta.outputs.version }}.aar.sig
+          asset_name: pulsar-mpc-${{ steps.meta.outputs.version }}.aar.sig
+          asset_content_type: application/octet-stream
+      - uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: pulsar-mpc-gpg-key.pub
+          asset_name: pulsar-mpc-gpg-key.pub
+          asset_content_type: application/octet-stream

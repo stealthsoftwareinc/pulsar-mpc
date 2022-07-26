@@ -1,0 +1,20 @@
+{
+
+  "handler": "sst_ajh_download",
+
+  "hashes": {
+    "md5": "3be209000dbc7e1b95bcdf47980a3baa",
+    "sha1": "056057782325134b76d1931c48f2c7e6595d7ef4",
+    "sha224": "7a040018dcffbc8483bf26896790e3e614f51737af24bcc09541082f",
+    "sha256": "1e3a91bc1f9dfce01af26026f856e064eab4c8ee0a8f457b5ae30b40b8b711f2",
+    "sha384": "d279d956f110b8c02701bd5697f78f25c64d40bed9bd561437d1ded67867a3f1815ac767d025f3a977475cd2774739ed",
+    "sha512": "2bc9f528c27fe644308eb7603c992bac8740e9f0c3601a130af30c9ffebbf7e0f5c28b76a00bbb478bad40fbe89b4223a58d604001e1713da71ff4b7fe6a08a7"
+  },
+
+  "urls": [
+    "https://www.openssl.org/source/openssl-1.1.1d.tar.gz",
+    "https://fossies.org/linux/misc/openssl-1.1.1d.tar.gz",
+    "https://mirror.math.princeton.edu/pub/openssl/source/openssl-1.1.1d.tar.gz"
+  ]
+
+}

@@ -1,0 +1,261 @@
+#! /bin/sh -
+#
+# Copyright (C) 2021 Stealth Software Technologies, Inc.
+#
+# Permission is hereby granted, free of charge, to any person
+# obtaining a copy of this software and associated documentation
+# files (the "Software"), to deal in the Software without
+# restriction, including without limitation the rights to use,
+# copy, modify, merge, publish, distribute, sublicense, and/or
+# sell copies of the Software, and to permit persons to whom the
+# Software is furnished to do so, subject to the following
+# conditions:
+#
+# The above copyright notice and this permission notice shall be
+# included in all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+# OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+# HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+# WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+# OTHER DEALINGS IN THE SOFTWARE.
+#
+# This script uses the SST Bash library to bootstrap from /bin/sh into
+# bash. See the Bash library > Bootstrapping section of the SST manual
+# for more information.
+#
+
+#-----------------------------------------------------------------------
+# Load the prelude
+#-----------------------------------------------------------------------
+
+case $0 in /*) x=$0 ;; *) x=./$0 ;; esac
+r='\(.*/\)'
+x=`expr "$x" : "$r"`. || exit $?
+set -e || exit $?
+. "$x/src/bash/prelude.bash"
+
+#-----------------------------------------------------------------------
+
+autogen_ac_start build-aux/autogen.ac
+autogen_am_start build-aux/autogen.am
+
+#-----------------------------------------------------------------------
+# Loose distributed files
+#-----------------------------------------------------------------------
+#
+# If a file needs to be distributed and there's no more specific place
+# to do it, then do it here.
+#
+
+sst_am_distribute_if_not_dir \
+  .github/** \
+  ATTRIBUTIONS.adoc \
+  CircuitBuilderREADME.adoc \
+  LICENSE \
+  README.adoc \
+  build-aux/gatbps-gen-date.sh \
+  build-aux/gatbps-gen-date.sh.cache \
+  build-aux/gatbps-gen-libtool-c.sh \
+  build-aux/gatbps-gen-libtool-c.sh.cache \
+  build-aux/gatbps-gen-version.sh \
+  build-aux/gatbps-gen-version.sh.args \
+  build-aux/gatbps-gen-version.sh.cache \
+  src/aar/build.gradle \
+  src/aar/gradle.properties \
+  src/aar/gradle/wrapper/gradle-wrapper.jar \
+  src/aar/gradle/wrapper/gradle-wrapper.properties \
+  src/aar/gradlew \
+  src/aar/gradlew.bat \
+  src/aar/pulsar-mpc/src/main/AndroidManifest.xml \
+  src/aar/pulsar-mpc/src/main/java/com/stealthsoftwareinc/bmc/MpcTask.java \
+  src/aar/settings.gradle \
+  src/bash/functions/** \
+  src/bash/prelude.bash \
+  src/circuits/** \
+  src/com/**/*.java \
+  src/pulsar-mpc-aar.dockerfile \
+;
+
+#-----------------------------------------------------------------------
+
+sst_ajh_download build-aux/downloads
+sst_ajh_gitbundle build-aux/gitbundles
+
+#-----------------------------------------------------------------------
+
+declare -A archs
+archs=(
+  [aarch64]=arm64-v8a
+  [x86_64]=x86_64
+)
+readonly archs
+
+apis=(
+  27
+)
+readonly apis
+
+#-----------------------------------------------------------------------
+
+for ARCH in ${!archs[@]}; do
+  for LEVEL in ${apis[@]}; do
+
+    sed \
+      "
+        s/@ARCH@/$ARCH/g
+        s/@LEVEL@/$LEVEL/g
+      " \
+      <parcels/pulsar-mpc-ARCH-linux-android-apiLEVEL-1.ac \
+      >parcels/pulsar-mpc-$ARCH-linux-android-api$LEVEL.ac \
+    ;
+
+    sst_ac_include parcels/pulsar-mpc-$ARCH-linux-android-api$LEVEL.ac
+
+    sed \
+      "
+        s/@ARCH@/$ARCH/g
+        s/@LEVEL@/$LEVEL/g
+      " \
+      <parcels/pulsar-mpc-ARCH-linux-android-apiLEVEL-1.am \
+      >parcels/pulsar-mpc-$ARCH-linux-android-api$LEVEL.am \
+    ;
+
+    sst_am_include parcels/pulsar-mpc-$ARCH-linux-android-api$LEVEL.am
+
+    mkdir -p \
+      parcels/pulsar-mpc-$ARCH-linux-android-api$LEVEL/builder \
+    ;
+    ln -s \
+      ../../pulsar-mpc-ARCH-linux-android-apiLEVEL-1/builder/Dockerfile \
+      parcels/pulsar-mpc-$ARCH-linux-android-api$LEVEL/builder/Dockerfile \
+    ;
+
+    sst_am_distribute \
+      parcels/pulsar-mpc-$ARCH-linux-android-api$LEVEL/builder/Dockerfile \
+    ;
+
+  done
+done
+
+#-----------------------------------------------------------------------
+
+for arch in ${!archs[@]}; do
+  for api in ${apis[@]}; do
+    src=pulsar-mpc-'$(PACKAGE_VERSION)'-$arch-linux-android-api$api
+    sst_ihs <<<'
+      pulsar-mpc-$(PACKAGE_VERSION)-android: parcels/'"$src"'.tar
+    ' | sst_am_append
+  done
+done
+
+sst_ihs <<<'
+  pulsar-mpc-$(PACKAGE_VERSION)-android:
+  	$(AM_V_at)$(GATBPS_RECIPE_MARKER_TOP)
+  	$(AM_V_at)rm -f -r ./$@$(TSUF)* ./$@
+  	$(AM_V_at)$(MKDIR_P) $@$(TSUF)1
+  	$(AM_V_at)$(MKDIR_P) $@$(TSUF)2/$@
+  	$(AM_V_at){ \
+  	  out=$@$(TSUF)2/$@; \
+  	  for arch in '"${!archs[@]}"'; do \
+  	    for api in '"${apis[@]}"'; do \
+  	      src=pulsar-mpc-$(PACKAGE_VERSION)-$$arch-linux-android-api$$api; \
+  	      dst=$$out/lib/$$arch-linux-android-api$$api; \
+  	      cp parcels/$$src.tar $@$(TSUF)1 || exit $$?; \
+  	      (cd $@$(TSUF)1 && tar xf $$src.tar) || exit $$?; \
+  	      $(MKDIR_P) $$dst || exit $$?; \
+  	      rmdir $$dst || exit $$?; \
+  	      cp -L -R $@$(TSUF)1/$$src/shared/usr/lib $$dst || exit $$?; \
+  	      if test -d $$out/circuits; then \
+  	        :; \
+  	      else \
+  	        cp -L -R $@$(TSUF)1/$$src/circuits $$out || exit $$?; \
+  	      fi; \
+  	    done; \
+  	  done; \
+  	  src=src/com/stealthsoftwareinc/bmc; \
+  	  dst=$$out/com/stealthsoftwareinc/bmc; \
+  	  $(MKDIR_P) $$dst || exit $$?; \
+  	  cp $$src/MpcTask.java $$dst || exit $$?; \
+  	  for x in \
+  	    $$out/circuits/* \
+  	    $$out/lib/*/* \
+  	  ; do \
+  	    if test -f $$x; then \
+  	      printf %s\\n "PULSAR-MPC $(PACKAGE_VERSION)" >$$x.version || exit $$?; \
+  	    fi; \
+  	  done; \
+  	}
+  	$(AM_V_at)mv -f $@$(TSUF)2 $@
+  	$(AM_V_at)-rm -f -r ./$@$(TSUF)*
+  	$(AM_V_at)$(GATBPS_RECIPE_MARKER_BOT)
+' | sst_am_append
+
+sst_ihs <<<'
+  GATBPS_TAR(
+    [pulsar-mpc-$(PACKAGE_VERSION)-android.tar],
+    [pulsar-mpc-$(PACKAGE_VERSION)-android],
+    [directory_contents])
+  GATBPS_XZ(
+    [pulsar-mpc-$(PACKAGE_VERSION)-android.tar.xz],
+    [pulsar-mpc-$(PACKAGE_VERSION)-android.tar])
+' | sst_ac_append
+
+#-----------------------------------------------------------------------
+
+# TODO: This is missing proper src/aar prerequisites.
+sst_ihs <<<'
+  pulsar-mpc-$(PACKAGE_VERSION).aar: pulsar-mpc-$(PACKAGE_VERSION)-android.tar
+  pulsar-mpc-$(PACKAGE_VERSION).aar: build-aux/downloads/android-commandlinetools-linux-7583922_latest.zip
+  pulsar-mpc-$(PACKAGE_VERSION).aar: src/pulsar-mpc-aar.dockerfile
+  	$(AM_V_at)$(GATBPS_RECIPE_MARKER_TOP)
+  	$(AM_V_at)rm -f -r ./$@$(TSUF)* ./$@
+  	$(AM_V_at)$(MKDIR_P) $@$(TSUF)1
+  	$(AM_V_at){ \
+  	  cp \
+  	    pulsar-mpc-$(PACKAGE_VERSION)-android.tar \
+  	    $@$(TSUF)1/pulsar-mpc.tar \
+  	  || exit $$?; \
+  	  cp \
+  	    build-aux/downloads/android-commandlinetools-linux-7583922_latest.zip \
+  	    $@$(TSUF)1/tools.zip \
+  	  || exit $$?; \
+  	  cp \
+  	    src/pulsar-mpc-aar.dockerfile \
+  	    $@$(TSUF)1/Dockerfile \
+  	  || exit $$?; \
+  	  cp -L -R \
+  	    src/aar \
+  	    $@$(TSUF)1/aar \
+  	  || exit $?; \
+  	  $(DOCKER) build \
+  	    --build-arg api='${apis[0]}' \
+  	    $${GITHUB_ACTOR:+--build-arg GITHUB_ACTOR="$$GITHUB_ACTOR"} \
+  	    $${GITHUB_MAVEN_PKG_URL:+--build-arg GITHUB_MAVEN_PKG_URL="$$GITHUB_MAVEN_PKG_URL"} \
+  	    $${GITHUB_TOKEN:+--build-arg GITHUB_TOKEN="$$GITHUB_TOKEN"} \
+  	    --tag tmp$$$$ \
+  	    $@$(TSUF)1 \
+  	  || exit $$?; \
+  	  $(DOCKER) create \
+  	    --name tmp$$$$ \
+  	    tmp$$$$ \
+  	  || exit $$?; \
+  	  $(DOCKER) cp \
+  	    tmp$$$$:/x/pulsar-mpc-release.aar \
+  	    $@$(TSUF)2 \
+  	  || exit $$?; \
+  	}
+  	$(AM_V_at)mv -f $@$(TSUF)2 $@
+  	$(AM_V_at)-rm -f -r ./$@$(TSUF)*
+  	$(AM_V_at)$(GATBPS_RECIPE_MARKER_BOT)
+' | sst_am_append
+
+#-----------------------------------------------------------------------
+
+autogen_ac_finish
+autogen_am_finish
+
+autoreconf -f -i -v -W all

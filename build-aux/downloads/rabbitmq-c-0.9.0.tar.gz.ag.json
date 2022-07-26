@@ -1,0 +1,18 @@
+{
+
+  "handler": "sst_ajh_download",
+
+  "hashes": {
+    "md5": "3d7a3894e6b191127be7987fbae0e157",
+    "sha1": "0709ef3c9906bd13158d3f9b11f1666bb3903f1d",
+    "sha224": "98e699271969149663a563c86f14432c3063db627b00fa2c2c7e937d",
+    "sha256": "316c0d156452b488124806911a62e0c2aa8a546d38fc8324719cd29aaa493024",
+    "sha384": "22e98f79e5a54bad6e5a7aa81ff529d2ce69c52bb290c032340fcf116b229b921bae6b178daf688b0b6db2d9cea7066c",
+    "sha512": "a63fe267a3ec112a5e9456a03066132b91f897181947fba18ea3efb14ca0a69996d7dfaecda61a0dd360e03a4e56569e70592e1674b75d20b937a118e1acfc64"
+  },
+
+  "urls": [
+    "https://github.com/alanxz/rabbitmq-c/archive/v0.9.0.tar.gz"
+  ]
+
+}
